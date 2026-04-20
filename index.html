@@ -3,571 +3,588 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BFS Mastery Presentation</title>
+    <title>BFS: The Interactive Experience</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@300;400;500&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         :root {
             --bg-deep: #020617;
-            --bg-slide: #0f172a;
-            --accent-cyan: #22d3ee;
-            --accent-orange: #f59e0b;
-            --accent-green: #10b981;
-            --text-main: #f8fafc;
+            --bg-card: #0f172a;
+            --accent: #22d3ee;
+            --accent-glow: rgba(34, 211, 238, 0.3);
+            --orange: #f59e0b;
+            --green: #10b981;
+            --red: #ef4444;
+            --text: #f8fafc;
             --text-dim: #94a3b8;
         }
 
-        * { box-sizing: border-box; }
-        body {
-            background-color: var(--bg-deep);
-            margin: 0;
-            padding: 20px 0 100px 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 60px;
-            font-family: 'Inter', sans-serif;
-            scroll-behavior: smooth;
+        * { box-sizing: border-box; transition: all 0.2s ease; }
+        body, html { 
+            margin: 0; padding: 0; height: 100%; width: 100%; 
+            overflow: hidden; background: var(--bg-deep);
+            font-family: 'Poppins', sans-serif; color: var(--text);
         }
 
-        #fullscreen-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-            background: var(--accent-cyan);
-            color: var(--bg-deep);
-            border: none;
-            padding: 12px 24px;
-            border-radius: 50px;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 10px 15px -3px rgba(34, 211, 238, 0.4);
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        #fullscreen-btn:hover { transform: scale(1.05); background: white; }
-
-        .slide-container {
-            width: 1200px;
-            height: 750px;
-            background-color: var(--bg-slide);
-            color: var(--text-main);
-            display: flex;
-            flex-direction: column;
-            padding: 40px 50px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-            border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.05);
+        /* Animated Background */
+        .bg-animate {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), #1e293b 0%, #020617 100%);
+            z-index: -1;
         }
 
-        h1, h2, h3 { font-family: 'Poppins', sans-serif; margin: 0; }
-        h1 { font-size: 54px; font-weight: 700; text-align: center; margin-bottom: 10px; }
-        .slide-title { font-size: 32px; font-weight: 600; margin-bottom: 20px; color: var(--accent-cyan); display: flex; align-items: center; gap: 15px; }
-        h3 { font-size: 22px; margin-bottom: 10px; color: var(--accent-orange); }
-        p, li { font-size: 17px; line-height: 1.5; color: #cbd5e1; }
-        .subtitle { font-size: 20px; color: var(--text-dim); text-align: center; }
+        /* Slide System */
+        .stage { position: relative; width: 100vw; height: 100vh; }
+        .slide {
+            position: absolute; width: 100%; height: 100%;
+            display: none; flex-direction: column; padding: 40px 80px;
+            justify-content: center; align-items: center;
+        }
+        .slide.active { display: flex; animation: slideIn 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
+        @keyframes slideIn { 
+            from { opacity: 0; transform: translateY(30px) scale(0.95); } 
+            to { opacity: 1; transform: translateY(0) scale(1); } 
+        }
 
-        .content-area { flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-start; z-index: 1; overflow-y: auto; }
-        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: start; }
+        /* UI Elements */
+        h1.title-main { font-size: 8rem; margin: 0; background: linear-gradient(to bottom, #fff, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 30px var(--accent-glow)); }
+        h2.section-head { font-size: 2.5rem; color: var(--accent); margin-bottom: 20px; align-self: flex-start; width: 100%; max-width: 1000px; border-left: 4px solid var(--accent); padding-left: 20px; }
         
-        .card { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
-        .highlight-box { border-left: 4px solid var(--accent-cyan); padding-left: 20px; margin: 15px 0; }
-        code { font-family: 'Fira Code', monospace; background: #1e293b; padding: 2px 6px; border-radius: 4px; color: var(--accent-cyan); }
+        .content-card { 
+            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px);
+            padding: 40px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1);
+            width: 100%; max-width: 1100px; position: relative; overflow: hidden;
+        }
+        .content-card:hover { border-color: var(--accent); box-shadow: 0 0 30px var(--accent-glow); }
 
-        .viz-box { background: #020617; border-radius: 12px; min-height: 380px; position: relative; border: 1px solid #1e293b; overflow: hidden; }
+        /* Global Hover Classes */
+        .interactive:hover { transform: scale(1.02); color: var(--accent); cursor: default; }
+        .interactive span:hover { color: #fff; text-shadow: 0 0 10px var(--accent); cursor: pointer; border-bottom: 1px solid var(--accent); }
+        
+        .btn { 
+            background: var(--accent); color: var(--bg-deep); border: none; padding: 15px 40px; 
+            border-radius: 50px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 10px;
+        }
+        .btn:hover { transform: scale(1.1) translateY(-3px); box-shadow: 0 10px 20px var(--accent-glow); background: #fff; }
+
+        /* BFS Elements */
         .node { 
-            position: absolute; width: 44px; height: 44px; border-radius: 50%; 
-            background: #1e293b; border: 2px solid #475569; color: white;
-            display: flex; align-items: center; justify-content: center; font-weight: bold;
-            transition: all 0.3s ease; z-index: 10; font-size: 16px;
+            width: 50px; height: 50px; border-radius: 50%; background: #1e293b; border: 2px solid #334155;
+            display: flex; align-items: center; justify-content: center; font-weight: bold; position: absolute; z-index: 2;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0; transform: scale(0);
         }
-        .node.processing { background: var(--accent-orange); border-color: white; transform: scale(1.15); box-shadow: 0 0 20px var(--accent-orange); }
-        .node.visited { background: var(--accent-green); border-color: #059669; }
-        .node.queued { background: #3b82f6; border-color: #60a5fa; box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
+        .node.show { opacity: 1; transform: scale(1); }
+        .node:hover { transform: scale(1.2); border-color: var(--accent); box-shadow: 0 0 15px var(--accent); z-index: 10; }
+        .node.active { background: var(--orange); border-color: #fff; animation: pulse 1s infinite alternate; }
+        .node.visited { background: var(--green); border-color: #fff; }
+        .node.queued { background: #3b82f6; border-color: #fff; }
         
-        .edge { position: absolute; background: #334155; height: 2px; transform-origin: top left; z-index: 5; }
-        .edge.active { background: var(--accent-cyan); height: 3px; z-index: 6; }
+        .edge { position: absolute; height: 2px; background: #334155; transform-origin: 0 50%; z-index: 1; opacity: 0; transition: opacity 0.5s; }
+        .edge.show { opacity: 1; }
+        .edge.highlight { background: var(--accent); height: 4px; box-shadow: 0 0 10px var(--accent); }
 
-        .viz-ui { display: flex; gap: 15px; margin-top: 15px; }
-        .data-panel { flex: 1; background: #1e293b; padding: 12px; border-radius: 8px; font-family: 'Fira Code', monospace; min-height: 70px; }
-        .panel-label { font-size: 11px; color: var(--accent-cyan); text-transform: uppercase; margin-bottom: 6px; display: block; font-weight: 700; }
-        .item-list { display: flex; gap: 6px; flex-wrap: wrap; }
-        .badge { background: #3b82f6; color: white; padding: 2px 8px; border-radius: 4px; font-size: 13px; }
-        .badge.visited-badge { background: var(--accent-green); }
+        /* Step-by-step text */
+        .step-text { opacity: 0; transform: translateX(-20px); transition: 0.5s; margin-bottom: 15px; }
+        .step-text.show { opacity: 1; transform: translateX(0); }
 
-        .btn { background: var(--accent-cyan); color: #020617; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 700; transition: 0.2s; }
-        .btn:hover { background: white; transform: translateY(-2px); }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        /* Queue UI */
+        .queue-strip { 
+            display: flex; gap: 10px; background: rgba(0,0,0,0.4); padding: 20px; border-radius: 12px;
+            min-height: 90px; border: 2px dashed #334155; align-items: center; justify-content: center;
+        }
+        .q-item { width: 50px; height: 50px; background: var(--accent); color: #000; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .slide-container > * { animation: fadeIn 0.6s ease forwards; }
+        /* Code Debugger Style */
+        .code-block { 
+            font-family: 'Fira Code', monospace; background: #020617; padding: 20px; 
+            border-radius: 12px; font-size: 0.9rem; line-height: 1.5; color: #94a3b8; 
+            max-height: 350px; overflow-y: auto; border: 1px solid #1e293b;
+        }
+        .code-line.active { background: rgba(34, 211, 238, 0.2); color: #fff; border-left: 3px solid var(--accent); padding-left: 5px; }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 15px; text-align: left; border: 1px solid #475569; }
-        th { background: rgba(255,255,255,0.1); }
+        /* Navigation Controls */
+        .nav-controls { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 20px; z-index: 100; }
+        .dot-nav { display: flex; gap: 10px; }
+        .dot { width: 12px; height: 12px; background: rgba(255,255,255,0.2); border-radius: 50%; cursor: pointer; }
+        .dot.active { background: var(--accent); transform: scale(1.4); }
+
+        /* Ripple Effect */
+        .ripple { position: absolute; border: 2px solid var(--accent); border-radius: 50%; pointer-events: none; animation: rippleOut 2s linear forwards; }
+        @keyframes rippleOut { from { width: 0; height: 0; opacity: 1; } to { width: 500px; height: 500px; opacity: 0; } }
+
+        /* Comparison Slide */
+        .comp-container { display: flex; width: 100%; gap: 20px; }
+        .comp-box { flex: 1; background: rgba(255,255,255,0.02); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); }
+
     </style>
 </head>
 <body>
 
-<button id="fullscreen-btn" onclick="toggleFullScreen()"><i class="fa-solid fa-expand"></i> Present Fullscreen</button>
+<div class="bg-animate" id="bg"></div>
 
-<!-- SLIDE 1: TITLE SLIDE -->
-<div class="slide-container" id="slide-1">
-    <div style="text-align:center; margin-top: 150px;">
-        <h1 style="color: var(--accent-cyan);">Breadth-First Search (BFS)</h1>
-        <p class="subtitle" style="font-size: 28px; margin-top: 20px;">Exploring Graphs Layer by Layer</p>
-        <div style="margin-top: 80px; font-size: 20px; color: var(--text-dim);">
-            <p>Aqsa Ali Raza Jamali</p>
-            <p>Design alogorithm</p>
-            <p>14-04-2026</p>
+<div class="stage" id="mainStage">
+    <!-- SLIDE 1: LANDING -->
+    <div class="slide active" id="s1">
+        <h1 class="title-main" style="margin-bottom: 0;">BFS</h1>
+        <p style="font-size: 1.5rem; color: var(--text-dim); margin-top: -10px; letter-spacing: 5px;">BREADTH FIRST SEARCH</p>
+        <p style="font-size: 1.2rem; color: var(--accent); margin-top: 10px; font-weight: 600;">Aqsa Ali Raza Jamali</p>
+        <div style="margin-top: 40px;">
+            <button class="btn" onclick="nextSlide()">START PRESENTATION <i class="fa-solid fa-play"></i></button>
         </div>
+        <p style="margin-top: 20px; font-size: 0.8rem; color: #475569;">Interactive Experience</p>
     </div>
-</div>
 
-<!-- SLIDE 2: INTRODUCTION -->
-<div class="slide-container" id="slide-2">
-    <h2 class="slide-title"><i class="fa-solid fa-circle-info"></i> Introduction</h2>
-    <div class="content-area">
-        <div class="two-col">
-            <div class="card">
-                <h3>What is a Graph?</h3>
-                <p>A collection of <strong>Vertices</strong> (nodes) and <strong>Edges</strong> (connections) that represent relationships between data points.</p>
-                <h3 style="margin-top: 20px;">What is Traversal?</h3>
-                <p>The process of visiting every node in a graph systematically exactly once.</p>
-            </div>
-            <div class="card">
-                <h3>Why do we need traversal?</h3>
-                <ul>
-                    <li>Searching for specific information.</li>
-                    <li>Finding the shortest path.</li>
-                    <li>Analyzing connectivity in networks.</li>
-                    <li>Detecting cycles or components.</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- SLIDE 3: WHAT IS BFS? -->
-<div class="slide-container" id="slide-3">
-    <h2 class="slide-title"><i class="fa-solid fa-magnifying-glass"></i> What is BFS?</h2>
-    <div class="content-area">
-        <div class="card">
-            <h3>Definition</h3>
-            <p><strong>Breadth-First Search (BFS)</strong> is an algorithm for traversing or searching tree or graph data structures.</p>
-            <div class="highlight-box">
-                <p><strong>Key Idea:</strong> It starts at the tree root (or some arbitrary node of a graph) and explores all of the neighbor nodes at the present depth prior to moving on to the nodes at the next depth level.</p>
-            </div>
-            <p style="margin-top: 20px;"><i class="fa-solid fa-check"></i> Works on both <strong>Directed/Undirected Graphs</strong> and <strong>Trees</strong>.</p>
-        </div>
-    </div>
-</div>
-
-<!-- SLIDE 4: BASIC CONCEPT -->
-<div class="slide-container" id="slide-4">
-    <h2 class="slide-title"><i class="fa-solid fa-lightbulb"></i> Basic Concept</h2>
-    <div class="content-area">
-        <div class="two-col">
-            <div class="card">
-                <h3>The "Ripple" Effect</h3>
-                <p>Imagine dropping a stone into still water. The ripples expand outwards evenly in all directions.</p>
-                <p style="margin-top: 15px;">BFS visits nodes in this exact pattern: <strong>Source → Neighbors → Neighbors of Neighbors.</strong></p>
-            </div>
-            <div class="card">
-                <h3>Exploration Strategy</h3>
-                <ol>
-                    <li>Start from a source node.</li>
-                    <li>Visit all immediate neighbors (Distance 1).</li>
-                    <li>Then move to the next level nodes (Distance 2).</li>
-                    <li>Continue until all reachable nodes are visited.</li>
-                </ol>
+    <!-- SLIDE 2: INTRO (DYNAMIC GRAPH) -->
+    <div class="slide" id="s2">
+        <h2 class="section-head">The Graph Universe</h2>
+        <div class="content-card">
+            <div style="display:flex; gap: 40px; align-items: flex-start;">
+                <div style="flex: 1;">
+                    <div class="step-text" id="txt-1">
+                        <p class="interactive"><i class="fa-solid fa-circle-dot" style="color:var(--accent)"></i> <span><strong>Graph:</strong> A collection of nodes and connections.</span></p>
+                    </div>
+                    <div class="step-text" id="txt-2">
+                        <p class="interactive"><i class="fa-solid fa-share-nodes" style="color:var(--orange)"></i> <span><strong>Traversal:</strong> A strategy to visit every node.</span></p>
+                    </div>
+                    <div class="step-text" id="txt-3">
+                        <p class="interactive"><i class="fa-solid fa-shoe-prints" style="color:var(--green)"></i> <span><strong>Utility:</strong> Essential for mapping and networking.</span></p>
+                    </div>
+                </div>
+                <div id="intro-graph" style="flex: 1; height: 350px; position: relative; background: rgba(0,0,0,0.3); border-radius: 20px; overflow: hidden;">
+                    <!-- Auto-generated intro graph -->
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- SLIDE 5: DATA STRUCTURE USED -->
-<div class="slide-container" id="slide-5">
-    <h2 class="slide-title"><i class="fa-solid fa-database"></i> Data Structure Used</h2>
-    <div class="content-area">
-        <div class="two-col">
-            <div class="card" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                <h1 style="color: var(--accent-orange); font-size: 80px;">QUEUE</h1>
-                <h3>(FIFO)</h3>
-                <p>First In, First Out</p>
+    <!-- SLIDE 3: WHAT IS BFS -->
+    <div class="slide" id="s3">
+        <h2 class="section-head">What is BFS?</h2>
+        <div class="content-card">
+            <div style="font-size: 1.1rem; border-bottom: 1px solid #334155; padding-bottom: 20px; line-height: 1.6;">
+                <p><strong>Breadth-First Search (BFS)</strong> is an algorithm for traversing or searching tree or graph data structures.</p>
+                <p style="color: var(--accent); margin: 10px 0;"><strong>Key Idea:</strong> It starts at the tree root (or some arbitrary node of a graph) and explores all of the neighbor nodes at the present depth prior to moving on to the nodes at the next depth level.</p>
+                <p style="font-size: 0.9rem; color: var(--text-dim);">Works on both Directed/Undirected Graphs and Trees.</p>
             </div>
-            <div class="card">
-                <h3>Why a Queue?</h3>
+            <div style="display: flex; gap: 40px; margin-top: 20px;">
+                <div style="flex: 1; text-align: center;" class="interactive">
+                    <i class="fa-solid fa-layer-group" style="font-size: 3rem; color: var(--accent);"></i>
+                    <h3>Layered</h3>
+                </div>
+                <div style="flex: 1; text-align: center;" class="interactive">
+                    <i class="fa-solid fa-arrows-to-circle" style="font-size: 3rem; color: var(--orange);"></i>
+                    <h3>Systematic</h3>
+                </div>
+                <div style="flex: 1; text-align: center;" class="interactive">
+                    <i class="fa-solid fa-map" style="font-size: 3rem; color: var(--green);"></i>
+                    <h3>Optimal</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 4: RIPPLE EFFECT -->
+    <div class="slide" id="s4">
+        <h2 class="section-head">The Signature: Ripple Effect</h2>
+        <div class="content-card" style="text-align: center; cursor: crosshair;" onclick="createRipple(event)">
+            <div style="margin-bottom: 20px; text-align: left;">
+                <h3 style="color: var(--accent); margin: 0;">The "Ripple" Effect</h3>
+                <p style="margin: 5px 0 15px 0; line-height: 1.5;">Imagine dropping a stone into still water. The ripples expand outwards evenly in all directions.<br>
+                <span style="color: var(--orange);">BFS visits nodes in this exact pattern: Source → Neighbors → Neighbors of Neighbors.</span></p>
+            </div>
+            <p style="font-size: 0.9rem; color: var(--text-dim); margin-bottom: 10px;">Click anywhere inside this area to trigger a BFS "Wave".</p>
+            <div id="ripple-area" style="height: 250px; position: relative; background: rgba(0,0,0,0.2); border-radius: 15px;">
+                <div class="node show active" style="top:50%; left:50%; transform: translate(-50%, -50%); opacity: 1;">A</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 5: QUEUE (FIFO) -->
+    <div class="slide" id="s5">
+        <h2 class="section-head">The Engine: FIFO Queue</h2>
+        <div class="content-card">
+            <div style="margin-bottom: 25px; line-height: 1.6;">
+                <p>BFS uses <strong>Queue data structure</strong> that follows the <strong>FIFO (First In, First Out)</strong> policy.</p>
                 <p>BFS requires us to visit nodes in the order they were discovered. A Queue perfectly preserves this "chronological discovery" order.</p>
-                <div class="highlight-box" style="margin-top: 20px;">
-                    <p>When we discover neighbors of a node, we add them to the <strong>back</strong> of the queue. We always pick the next node to process from the <strong>front</strong>.</p>
+                <p style="color: var(--accent);">When we discover neighbors of a node, we add them to the <strong>back</strong> of the queue. We always pick the next node to process from the <strong>front</strong>.</p>
+            </div>
+            <div class="queue-strip" id="manual-queue">
+                <!-- Items appear here -->
+            </div>
+            <div style="margin-top: 30px; display: flex; gap: 20px; justify-content: center;">
+                <button class="btn" onclick="enqueueItem()"><i class="fa-solid fa-plus"></i> Enqueue</button>
+                <button class="btn" style="background:var(--orange)" onclick="dequeueItem()"><i class="fa-solid fa-minus"></i> Dequeue</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 6: SIMULATOR (HIERARCHICAL GRAPH A-G) -->
+    <div class="slide" id="s6">
+        <h2 class="section-head">BFS Live Debugger</h2>
+        <div style="display:flex; width:100%; gap: 20px;">
+            <div class="content-card" style="flex: 1.5; height: 500px; position: relative;" id="sim-canvas">
+                <!-- Main BFS Simulation -->
+            </div>
+            <div style="flex: 1; display:flex; flex-direction: column; gap: 10px;">
+                <div class="code-block" id="pseudo-display">
+                    <div class="code-line" id="line-1">Q = ["A"]</div>
+                    <div class="code-line" id="line-2">visited = {"A"}</div>
+                    <div class="code-line" id="line-3">while Q not empty:</div>
+                    <div class="code-line" id="line-4">&nbsp;&nbsp;curr = Q.dequeue()</div>
+                    <div class="code-line" id="line-5">&nbsp;&nbsp;for n in neighbors(curr):</div>
+                    <div class="code-line" id="line-6">&nbsp;&nbsp;&nbsp;&nbsp;if n not visited:</div>
+                    <div class="code-line" id="line-7">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;visited.add(n)</div>
+                    <div class="code-line" id="line-8">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Q.enqueue(n)</div>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- SLIDE 6: BFS ALGORITHM STEPS -->
-<div class="slide-container" id="slide-6">
-    <h2 class="slide-title"><i class="fa-solid fa-list-check"></i> BFS Algorithm Steps</h2>
-    <div class="content-area">
-        <div class="card">
-            <ol style="font-size: 20px; line-height: 2;">
-                <li>Start with a <strong>source node</strong>.</li>
-                <li>Mark the source as <strong>visited</strong>.</li>
-                <li>Put the source node in a <strong>queue</strong>.</li>
-                <li>While the <strong>queue is not empty</strong>:
-                    <ul>
-                        <li>Remove the <strong>front node</strong> from the queue.</li>
-                        <li>Visit all its <strong>unvisited neighbors</strong>.</li>
-                        <li>Mark them as visited and add them to the <strong>queue</strong>.</li>
-                    </ul>
-                </li>
-            </ol>
-        </div>
-    </div>
-</div>
-
-<!-- SLIDE 7: PSEUDOCODE -->
-<div class="slide-container" id="slide-7">
-    <h2 class="slide-title"><i class="fa-solid fa-code"></i> Pseudocode</h2>
-    <div class="content-area">
-        <div class="card" style="background: #1e293b; font-family: 'Fira Code', monospace; font-size: 18px;">
-            <p style="color: var(--accent-orange);">BFS(Graph, start_node):</p>
-            <p style="padding-left: 20px;">create queue Q</p>
-            <p style="padding-left: 20px;">mark start_node as visited</p>
-            <p style="padding-left: 20px;">enqueue start_node into Q</p>
-            <p style="padding-left: 20px; margin-top: 10px; color: var(--accent-cyan);">while Q is not empty:</p>
-            <p style="padding-left: 40px;">node = dequeue Q</p>
-            <p style="padding-left: 40px; color: var(--accent-green);">for each neighbor in Graph.neighbors(node):</p>
-            <p style="padding-left: 60px;">if neighbor is NOT visited:</p>
-            <p style="padding-left: 80px;">mark neighbor as visited</p>
-            <p style="padding-left: 80px;">enqueue neighbor into Q</p>
-        </div>
-    </div>
-</div>
-
-<!-- SLIDE 8: EXAMPLE (STEP-BY-STEP) -->
-<div class="slide-container" id="slide-8">
-    <h2 class="slide-title"><i class="fa-solid fa-diagram-project"></i> Example (Step-by-Step)</h2>
-    <div class="content-area">
-        <div class="two-col">
-            <div class="card">
-                <h3>Sample Graph</h3>
-                <p>Nodes: A, B, C, D, E</p>
-                <p>Edges: (A-B), (A-C), (B-D), (C-E)</p>
-                <h3 style="margin-top: 20px;">Order of Traversal:</h3>
-                <div style="font-size: 30px; font-weight: bold; color: var(--accent-cyan); text-align: center; margin-top: 20px;">
-                    A → B → C → D → E
-                </div>
-            </div>
-            <div class="card">
-                <h3>Steps:</h3>
-                <ol style="font-size: 15px;">
-                    <li>Enqueue A (Visited: A)</li>
-                    <li>Dequeue A, Enqueue neighbors B, C</li>
-                    <li>Dequeue B, Enqueue neighbor D</li>
-                    <li>Dequeue C, Enqueue neighbor E</li>
-                    <li>Dequeue D (No unvisited neighbors)</li>
-                    <li>Dequeue E (No unvisited neighbors)</li>
-                </ol>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- SLIDE 9: VISUALIZATION EXPLANATION -->
-<div class="slide-container" id="problem-1">
-    <h2 class="slide-title"><i class="fa-solid fa-tree"></i> Level-Order Visualization</h2>
-    <div class="content-area">
-        <div class="two-col" style="grid-template-columns: 1fr 1.5fr;">
-            <div class="card">
-                <h3>Tree Traversal Demo</h3>
-                <p>This interactive demo simulates <strong>Level-wise Traversal</strong> (Layer 1, then Layer 2, etc.).</p>
-                <div class="highlight-box" style="border-color: var(--accent-green)">
-                    <p>Observe how nodes turn <strong>blue</strong> when added to the queue (discovered) and <strong>green</strong> when dequeued (visited).</p>
-                </div>
-                <div id="bfs-status-text" style="font-style: italic; color: var(--accent-orange); margin-top: 10px;">Click Start to begin traversal...</div>
-            </div>
-            <div>
-                <div class="viz-box" id="bfs-canvas"></div>
-                <div class="viz-ui">
-                    <div class="data-panel">
-                        <span class="panel-label">Frontier Queue (FIFO)</span>
-                        <div id="bfs-queue" class="item-list"></div>
-                    </div>
-                    <div class="data-panel">
-                        <span class="panel-label">Visited Set (Order)</span>
-                        <div id="bfs-visited" class="item-list"></div>
-                    </div>
-                    <div style="display:flex; flex-direction:column; gap:10px; justify-content: center;">
-                        <button class="btn" id="bfs-start" onclick="runBFS()">Start BFS</button>
-                        <button class="btn" style="background:#334155; color:white; padding: 5px 10px;" onclick="resetBFS()">Reset</button>
+                <div class="content-card" style="padding: 15px;">
+                    <p style="font-size: 0.8rem; margin: 0 0 10px 0;">Controls:</p>
+                    <div style="display:flex; gap: 10px;">
+                        <button class="btn" style="padding: 8px 15px; font-size: 0.8rem;" onclick="stepBFS()">Step <i class="fa-solid fa-forward"></i></button>
+                        <button class="btn" style="padding: 8px 15px; font-size: 0.8rem; background: var(--green);" onclick="autoBFS()">Auto</button>
+                        <button class="btn" style="padding: 8px 15px; font-size: 0.8rem; background: var(--red);" onclick="resetBFS()">Reset</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- SLIDE 10: APPLICATIONS OF BFS -->
-<div class="slide-container" id="slide-11">
-    <h2 class="slide-title"><i class="fa-solid fa-earth-americas"></i> Applications of BFS</h2>
-    <div class="content-area">
-        <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:20px;">
-            <div class="card">
-                <h3 style="color:var(--accent-cyan)"><i class="fa-solid fa-route"></i> Shortest Path</h3>
-                <p>Finding the minimum number of edges between two nodes in an unweighted graph.</p>
-            </div>
-            <div class="card">
-                <h3 style="color:var(--accent-green)"><i class="fa-solid fa-users"></i> Social Networks</h3>
-                <p>Friend suggestions and calculating "Degrees of Separation" (e.g., LinkedIn connections).</p>
-            </div>
-            <div class="card">
-                <h3 style="color:var(--accent-orange)"><i class="fa-solid fa-spider"></i> Web Crawling</h3>
-                <p>Search engines use BFS to discover pages layer-by-layer starting from a seed URL.</p>
-            </div>
-            <div class="card">
-                <h3 style="color:var(--accent-cyan)"><i class="fa-solid fa-location-arrow"></i> GPS Navigation</h3>
-                <p>Basic routing algorithms and finding nearby points of interest.</p>
+    <!-- SLIDE 7: LEVELS -->
+    <div class="slide" id="s7">
+        <h2 class="section-head">Level Segmentation</h2>
+        <div class="content-card">
+            <p>BFS groups nodes into <strong>Levels</strong> based on distance from root.</p>
+            <div id="level-viz" style="height: 300px; display: flex; align-items: center; justify-content: space-around;">
+                <div class="interactive" onmouseover="hlLevel(0)" style="padding:20px; border:1px solid var(--accent); border-radius:10px;">L0 (Root: A)</div>
+                <div class="interactive" onmouseover="hlLevel(1)" style="padding:20px; border:1px solid var(--accent); border-radius:10px;">L1 (B, C)</div>
+                <div class="interactive" onmouseover="hlLevel(2)" style="padding:20px; border:1px solid var(--accent); border-radius:10px;">L2 (D, E, F, G)</div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- SLIDE 11: TIME AND SPACE COMPLEXITY -->
-<div class="slide-container" id="slide-12">
-    <h2 class="slide-title"><i class="fa-solid fa-gauge-high"></i> Time & Space Complexity</h2>
-    <div class="content-area">
-        <div class="two-col">
-            <div class="card">
-                <h3>Time Complexity: $O(V + E)$</h3>
-                <p>We visit every <strong>Vertex (V)</strong> once and check every <strong>Edge (E)</strong> exactly twice (once for each endpoint).</p>
+    <!-- SLIDE 8: APPLICATIONS -->
+    <div class="slide" id="s8">
+        <h2 class="section-head">BFS in the Wild</h2>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; max-width: 1000px;">
+            <div class="content-card interactive" style="padding: 20px;">
+                <h4 style="margin:0; color:var(--accent);"><i class="fa-solid fa-location-arrow"></i> GPS Navigation</h4>
+                <p style="font-size: 0.8rem;">Finds the shortest path in unweighted maps.</p>
             </div>
-            <div class="card">
-                <h3>Space Complexity: $O(V)$</h3>
-                <p>In the worst case (e.g., a star graph), the <strong>Queue</strong> might store all vertices at once.</p>
+            <div class="content-card interactive" style="padding: 20px;">
+                <h4 style="margin:0; color:var(--green);"><i class="fa-solid fa-users"></i> Social Discovery</h4>
+                <p style="font-size: 0.8rem;">Suggests friends (Friends of Friends).</p>
+            </div>
+            <div class="content-card interactive" style="padding: 20px;">
+                <h4 style="margin:0; color:var(--orange);"><i class="fa-solid fa-bug"></i> Web Crawlers</h4>
+                <p style="font-size: 0.8rem;">Indexes the internet layer-by-layer.</p>
+            </div>
+            <div class="content-card interactive" style="padding: 20px;">
+                <h4 style="margin:0; color:var(--red);"><i class="fa-solid fa-network-wired"></i> Peer-to-Peer</h4>
+                <p style="font-size: 0.8rem;">Propagating data through a network efficiently.</p>
             </div>
         </div>
-        <div class="card" style="margin-top: 20px;">
-            <h3>In Simple Terms:</h3>
-            <p>The algorithm's performance scales linearly with the size of the graph. It is very efficient for level-based analysis.</p>
-        </div>
     </div>
-</div>
 
-<!-- SLIDE 12: BFS VS DFS -->
-<div class="slide-container" id="slide-13">
-    <h2 class="slide-title"><i class="fa-solid fa-code-compare"></i> BFS vs DFS</h2>
-    <div class="content-area">
-        <table>
-            <tr>
-                <th>Feature</th>
-                <th style="color: var(--accent-cyan);">BFS</th>
-                <th style="color: var(--accent-orange);">DFS</th>
-            </tr>
-            <tr>
-                <td>Strategy</td>
-                <td>Level-wise</td>
-                <td>Depth-wise</td>
-            </tr>
-            <tr>
-                <td>Data Structure</td>
-                <td>Queue</td>
-                <td>Stack (or Recursion)</td>
-            </tr>
-            <tr>
-                <td>Memory</td>
-                <td>More (stores levels)</td>
-                <td>Less (stores path)</td>
-            </tr>
-            <tr>
-                <td>Best Use Case</td>
-                <td>Shortest Path</td>
-                <td>Pathfinding</td>
-            </tr>
-        </table>
-    </div>
-</div>
-
-<!-- SLIDE 13: ADVANTAGES & DISADVANTAGES -->
-<div class="slide-container" id="slide-14">
-    <h2 class="slide-title"><i class="fa-solid fa-balance-scale"></i> Pros & Cons</h2>
-    <div class="content-area">
-        <div class="two-col">
-            <div class="card" style="border-top: 5px solid var(--accent-green);">
-                <h3><i class="fa-solid fa-thumbs-up"></i> Advantages</h3>
-                <ul>
-                    <li>Always finds the shortest path in unweighted graphs.</li>
-                    <li>Guaranteed to find a solution if one exists.</li>
-                    <li>Simple logic and easy to implement.</li>
+    <!-- SLIDE 9: BFS VS DFS -->
+    <div class="slide" id="s9">
+        <h2 class="section-head">BFS vs DFS</h2>
+        <div class="comp-container">
+            <div class="comp-box">
+                <h3 style="color:var(--accent)">BFS (Breadth)</h3>
+                <ul style="font-size: 0.9rem;">
+                    <li>Uses a <strong>Queue</strong></li>
+                    <li>Finds Shortest Path</li>
+                    <li>Wider memory usage</li>
                 </ul>
             </div>
-            <div class="card" style="border-top: 5px solid #ef4444;">
-                <h3><i class="fa-solid fa-thumbs-down"></i> Disadvantages</h3>
-                <ul>
-                    <li>Requires more memory than DFS (storing all neighbors).</li>
-                    <li>Not suitable for graphs with infinite or extremely deep branches.</li>
+            <div class="comp-box">
+                <h3 style="color:var(--orange)">DFS (Depth)</h3>
+                <ul style="font-size: 0.9rem;">
+                    <li>Uses a <strong>Stack</strong></li>
+                    <li>Goes deep before wide</li>
+                    <li>Better for puzzles/mazes</li>
                 </ul>
             </div>
         </div>
     </div>
-</div>
 
-<!-- SLIDE 14: CONCLUSION -->
-<div class="slide-container" id="slide-15">
-    <h2 class="slide-title"><i class="fa-solid fa-flag-checkered"></i> Conclusion</h2>
-    <div class="content-area">
-        <div class="card">
-            <h3>Key Takeaways:</h3>
-            <ul style="font-size: 20px; line-height: 1.8;">
-                <li>BFS is a <strong>layer-by-layer</strong> exploration algorithm.</li>
-                <li>It uses a <strong>Queue (FIFO)</strong> to manage discovery order.</li>
-                <li>Crucial for <strong>Shortest Path</strong> problems and connectivity.</li>
-                <li>Powers modern technology from <strong>Google Search</strong> to <strong>GPS</strong>.</li>
-            </ul>
-        </div>
-        <div style="text-align: center; margin-top: 50px;">
-            <h2 style="color: var(--accent-cyan);">Thank You!</h2>
-            <p>Questions?</p>
+    <!-- SLIDE 10: CONCLUSION -->
+    <div class="slide" id="s10">
+        <h2 class="section-head">Conclusion</h2>
+        <div class="content-card">
+            <div id="conc-list">
+                <p class="interactive"><i class="fa-solid fa-check" style="color:var(--green)"></i> Explores level-by-level systematically.</p>
+                <p class="interactive"><i class="fa-solid fa-check" style="color:var(--green)"></i> Guarantees shortest path in unweighted graphs.</p>
+                <p class="interactive"><i class="fa-solid fa-check" style="color:var(--green)"></i> Foundational for modern network AI.</p>
+            </div>
+            <h1 style="font-size: 2rem; margin-top: 40px; color: var(--accent);">"The bridge between nodes is the bridge to knowledge."</h1>
         </div>
     </div>
+
+    <!-- SLIDE 11: THANK YOU -->
+    <div class="slide" id="s11">
+        <div style="text-align: center;">
+            <h1 style="font-size: 6rem; text-shadow: 0 0 40px var(--accent-glow);">Thank You!</h1>
+            <p id="any-q" style="font-size: 2rem; color: var(--orange); opacity: 0; transform: translateY(20px);">Any Questions?</p>
+            <div style="margin-top: 50px;">
+                <button class="btn" onclick="goToSlide(0)">Replay <i class="fa-solid fa-rotate-left"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- NAVIGATION UI -->
+<div class="nav-controls">
+    <button class="btn" style="padding: 10px 20px; background: rgba(255,255,255,0.05); color: #fff;" onclick="prevSlide()"><i class="fa-solid fa-arrow-left"></i></button>
+    <div class="dot-nav" id="dotNav"></div>
+    <button class="btn" style="padding: 10px 20px; background: rgba(255,255,255,0.05); color: #fff;" onclick="nextSlide()"><i class="fa-solid fa-arrow-right"></i></button>
 </div>
 
 <script>
-    function toggleFullScreen() {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen();
-            document.getElementById('fullscreen-btn').innerHTML = '<i class="fa-solid fa-compress"></i> Exit Fullscreen';
-        } else {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-                document.getElementById('fullscreen-btn').innerHTML = '<i class="fa-solid fa-expand"></i> Present Fullscreen';
-            }
-        }
+    // --- SLIDE NAVIGATION ---
+    let currentSlideIndex = 0;
+    const slides = document.querySelectorAll('.slide');
+    const dotNav = document.getElementById('dotNav');
+
+    function initSlides() {
+        slides.forEach((_, i) => {
+            const dot = document.createElement('div');
+            dot.className = 'dot';
+            dot.onclick = () => goToSlide(i);
+            dotNav.appendChild(dot);
+        });
+        updateSlideUI();
     }
 
-    const nodes = [
-        { id: '1', x: 300, y: 40 },
-        { id: '2', x: 180, y: 140 },
-        { id: '3', x: 420, y: 140 },
-        { id: '4', x: 120, y: 260 },
-        { id: '5', x: 240, y: 260 },
-        { id: '6', x: 360, y: 260 },
-        { id: '7', x: 480, y: 260 }
-    ];
-    const edges = [
-        ['1', '2'], ['1', '3'], ['2', '4'], ['2', '5'], ['3', '6'], ['3', '7']
-    ];
+    function goToSlide(index) {
+        if (index < 0 || index >= slides.length) return;
+        slides[currentSlideIndex].classList.remove('active');
+        currentSlideIndex = index;
+        slides[currentSlideIndex].classList.add('active');
+        updateSlideUI();
+        
+        if(currentSlideIndex === 1) buildIntroGraph();
+        if(currentSlideIndex === 5) resetBFS();
+        if(currentSlideIndex === 10) setTimeout(() => {
+            document.getElementById('any-q').style.opacity = '1';
+            document.getElementById('any-q').style.transform = 'translateY(0)';
+        }, 1000);
+    }
 
-    function drawGraph(containerId) {
-        const container = document.getElementById(containerId);
+    function nextSlide() { goToSlide(currentSlideIndex + 1); }
+    function prevSlide() { goToSlide(currentSlideIndex - 1); }
+
+    function updateSlideUI() {
+        document.querySelectorAll('.dot').forEach((dot, i) => {
+            dot.classList.toggle('active', i === currentSlideIndex);
+        });
+    }
+
+    // --- BG ANIMATION ---
+    document.addEventListener('mousemove', (e) => {
+        const x = (e.clientX / window.innerWidth) * 100;
+        const y = (e.clientY / window.innerHeight) * 100;
+        document.getElementById('bg').style.setProperty('--mouse-x', `${x}%`);
+        document.getElementById('bg').style.setProperty('--mouse-y', `${y}%`);
+    });
+
+    // --- SLIDE 2: BUILD GRAPH ANIMATION ---
+    function buildIntroGraph() {
+        const container = document.getElementById('intro-graph');
         container.innerHTML = '';
-        edges.forEach(([from, to]) => {
-            const n1 = nodes.find(n => n.id === from);
-            const n2 = nodes.find(n => n.id === to);
-            const edge = document.createElement('div');
-            edge.className = 'edge';
-            edge.id = `${containerId}-edge-${from}-${to}`;
-            const dx = n2.x - n1.x, dy = n2.y - n1.y;
-            const dist = Math.sqrt(dx*dx + dy*dy);
-            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-            edge.style.width = `${dist}px`;
-            edge.style.left = `${n1.x + 22}px`;
-            edge.style.top = `${n1.y + 22}px`;
-            edge.style.transform = `rotate(${angle}deg)`;
-            container.appendChild(edge);
+        const nodes = [
+            { id: 'A', x: 250, y: 50 },
+            { id: 'B', x: 150, y: 150 },
+            { id: 'C', x: 350, y: 150 }
+        ];
+        const edges = [['A', 'B'], ['A', 'C']];
+
+        // Reset texts
+        document.querySelectorAll('.step-text').forEach(t => t.classList.remove('show'));
+
+        let delay = 300;
+        
+        nodes.forEach((n, i) => {
+            setTimeout(() => {
+                const div = document.createElement('div');
+                div.className = 'node show';
+                div.style.left = n.x + 'px';
+                div.style.top = n.y + 'px';
+                div.innerText = n.id;
+                container.appendChild(div);
+                if(i === 0) document.getElementById('txt-1').classList.add('show');
+                if(i === 1) document.getElementById('txt-2').classList.add('show');
+                if(i === 2) document.getElementById('txt-3').classList.add('show');
+            }, delay);
+            delay += 600;
         });
-        nodes.forEach(n => {
-            const el = document.createElement('div');
-            el.className = 'node';
-            el.id = `${containerId}-node-${n.id}`;
-            el.innerText = n.id;
-            el.style.left = `${n.x}px`;
-            el.style.top = `${n.y}px`;
-            container.appendChild(el);
+
+        edges.forEach(e => {
+            setTimeout(() => {
+                const from = nodes.find(n => n.id === e[0]);
+                const to = nodes.find(n => n.id === e[1]);
+                const line = document.createElement('div');
+                line.className = 'edge show';
+                const dx = to.x - from.x;
+                const dy = to.y - from.y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                line.style.width = `${dist}px`;
+                line.style.left = `${from.x + 25}px`;
+                line.style.top = `${from.y + 25}px`;
+                line.style.transform = `rotate(${angle}deg)`;
+                container.appendChild(line);
+            }, delay);
+            delay += 400;
         });
     }
 
-    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-    let bfsRunning = false;
-    async function runBFS() {
-        if (bfsRunning) return;
-        bfsRunning = true;
-        document.getElementById('bfs-start').disabled = true;
-        const status = document.getElementById('bfs-status-text');
+    // --- RIPPLE SYSTEM ---
+    function createRipple(e) {
+        const area = document.getElementById('ripple-area');
+        const rect = area.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
         
-        const queue = ['1'];
-        const visited = [];
-        const visitedSet = new Set();
+        const ripple = document.createElement('div');
+        ripple.className = 'ripple';
+        ripple.style.left = `${x}px`;
+        ripple.style.top = `${y}px`;
+        ripple.style.transform = 'translate(-50%, -50%)';
+        area.appendChild(ripple);
         
-        updateListUI('bfs-queue', queue);
-        updateListUI('bfs-visited', visited, true);
+        setTimeout(() => ripple.remove(), 2000);
+    }
+
+    // --- MANUAL QUEUE ---
+    const qItems = ["A", "B"];
+    function renderManualQueue() {
+        const container = document.getElementById('manual-queue');
+        container.innerHTML = qItems.map(item => `<div class="q-item">${item}</div>`).join('');
+    }
+    function enqueueItem() {
+        if(qItems.length > 7) return;
+        qItems.push(String.fromCharCode(65 + Math.floor(Math.random() * 26)));
+        renderManualQueue();
+    }
+    function dequeueItem() {
+        qItems.shift();
+        renderManualQueue();
+    }
+
+    // --- BFS SIMULATOR ENGINE (A-G HIERARCHY) ---
+    let bfsState = {
+        queue: [],
+        visited: new Set(),
+        current: null,
+        nodes: [
+            {id: 'A', x: 350, y: 50, neighbors: ['B', 'C']},
+            {id: 'B', x: 200, y: 150, neighbors: ['A', 'D', 'E']},
+            {id: 'C', x: 500, y: 150, neighbors: ['A', 'F', 'G']},
+            {id: 'D', x: 120, y: 250, neighbors: ['B']},
+            {id: 'E', x: 280, y: 250, neighbors: ['B']},
+            {id: 'F', x: 420, y: 250, neighbors: ['C']},
+            {id: 'G', x: 580, y: 250, neighbors: ['C']}
+        ],
+        step: 0
+    };
+
+    function resetBFS() {
+        bfsState.queue = ['A'];
+        bfsState.visited = new Set(['A']);
+        bfsState.current = null;
+        renderBFS();
+        updatePseudo(1);
+    }
+
+    function renderBFS() {
+        const canvas = document.getElementById('sim-canvas');
+        canvas.innerHTML = '';
         
-        document.getElementById(`bfs-canvas-node-1`).classList.add('queued');
-
-        while(queue.length > 0) {
-            status.innerText = `Dequeueing node ${queue[0]}...`;
-            const currId = queue.shift();
-            updateListUI('bfs-queue', queue);
-            
-            const el = document.getElementById(`bfs-canvas-node-${currId}`);
-            el.classList.remove('queued');
-            el.classList.add('processing');
-            await sleep(1000);
-            
-            visited.push(currId);
-            visitedSet.add(currId);
-            el.classList.replace('processing', 'visited');
-            updateListUI('bfs-visited', visited, true);
-            status.innerText = `Node ${currId} visited. Finding neighbors...`;
-
-            const neighbors = edges.filter(e => e[0] === currId).map(e => e[1]);
-            for(const nId of neighbors) {
-                if(!visitedSet.has(nId) && !queue.includes(nId)) {
-                    status.innerText = `Discovered neighbor ${nId}. Adding to Queue.`;
-                    document.getElementById(`bfs-canvas-edge-${currId}-${nId}`).classList.add('active');
-                    queue.push(nId);
-                    document.getElementById(`bfs-canvas-node-${nId}`).classList.add('queued');
-                    updateListUI('bfs-queue', queue);
-                    await sleep(600);
+        // Draw Edges
+        bfsState.nodes.forEach(n => {
+            n.neighbors.forEach(nid => {
+                const target = bfsState.nodes.find(node => node.id === nid);
+                if (target && n.id < target.id) {
+                    const line = document.createElement('div');
+                    line.className = 'edge show';
+                    const dx = target.x - n.x;
+                    const dy = target.y - n.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                    line.style.width = `${dist}px`;
+                    line.style.left = `${n.x + 25}px`;
+                    line.style.top = `${n.y + 25}px`;
+                    line.style.transform = `rotate(${angle}deg)`;
+                    canvas.appendChild(line);
                 }
-            }
-        }
-        status.innerText = "BFS Complete! Every node visited level-by-level.";
-        bfsRunning = false;
-    }
+            });
+        });
 
-    function updateListUI(id, list, isVisited = false) {
-        const cont = document.getElementById(id);
-        if(!cont) return;
-        cont.innerHTML = list.length === 0 ? '<span style="color:#475569">Empty</span>' : '';
-        list.forEach(i => {
-            const b = document.createElement('span');
-            b.className = isVisited ? 'badge visited-badge' : 'badge';
-            b.innerText = i;
-            cont.appendChild(b);
+        // Draw Nodes
+        bfsState.nodes.forEach(n => {
+            const div = document.createElement('div');
+            div.className = 'node show';
+            if(bfsState.current === n.id) div.classList.add('active');
+            else if(bfsState.visited.has(n.id)) div.classList.add('visited');
+            else if(bfsState.queue.includes(n.id)) div.classList.add('queued');
+            
+            div.style.left = `${n.x}px`;
+            div.style.top = `${n.y}px`;
+            div.innerText = n.id;
+            canvas.appendChild(div);
         });
     }
 
-    function resetBFS() { 
-        bfsRunning = false; 
-        document.getElementById('bfs-start').disabled = false; 
-        document.getElementById('bfs-status-text').innerText = 'Click Start to begin traversal...';
-        updateListUI('bfs-queue', []); 
-        updateListUI('bfs-visited', []);
-        drawGraph('bfs-canvas'); 
+    function updatePseudo(line) {
+        document.querySelectorAll('.code-line').forEach(l => l.classList.remove('active'));
+        const target = document.getElementById(`line-${line}`);
+        if(target) target.classList.add('active');
     }
 
-    window.onload = () => { drawGraph('bfs-canvas'); };
+    async function stepBFS() {
+        if(bfsState.queue.length === 0 && !bfsState.current) return;
+
+        if(!bfsState.current) {
+            updatePseudo(4);
+            bfsState.current = bfsState.queue.shift();
+            renderBFS();
+        } else {
+            updatePseudo(5);
+            const currNode = bfsState.nodes.find(n => n.id === bfsState.current);
+            currNode.neighbors.forEach(nid => {
+                if(!bfsState.visited.has(nid)) {
+                    bfsState.visited.add(nid);
+                    bfsState.queue.push(nid);
+                }
+            });
+            bfsState.current = null;
+            renderBFS();
+            if(bfsState.queue.length > 0) updatePseudo(8);
+            else updatePseudo(3);
+        }
+    }
+
+    async function autoBFS() {
+        while(bfsState.queue.length > 0 || bfsState.current) {
+            await stepBFS();
+            await new Promise(r => setTimeout(r, 800));
+        }
+    }
+
+    // Key Listeners
+    window.addEventListener('keydown', (e) => {
+        if(e.key === 'ArrowRight') nextSlide();
+        if(e.key === 'ArrowLeft') prevSlide();
+    });
+
+    // Initialize
+    window.onload = () => {
+        initSlides();
+        renderManualQueue();
+    }
 </script>
 
 </body>
