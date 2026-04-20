@@ -1,38 +1,46 @@
-# bfs-presentation
-Interactive BFS Visualization Presentation
+# BFS Visualization & Interactive Learning System
 
-This is an interactive and visually rich web-based presentation that explains Breadth-First Search (BFS) using animations, diagrams, and step-by-step visualization.
-
-## 🚀 Live Demo:
+## 🚀 Live Demo
 https://aqsaalirazajamali.github.io/bfs-presentation/
 
-## About the Project:
-This project demonstrates the Breadth-First Search (BFS) algorithm in an easy and interactive way.  
-It is designed as a presentation using HTML, CSS, and JavaScript with live graph visualization.
+## 📌 Project Overview
+This project is an interactive BFS (Breadth-First Search) visualization system built using HTML, CSS, and JavaScript. It demonstrates the BFS algorithm through step-by-step graph traversal, queue (FIFO) simulation, and level-wise exploration in a visually interactive format.
 
-## Features:
-•	Step-by-step BFS visualization
-•	Animated node traversal (visited, queued, processing)
-•	Queue (FIFO) simulation
-•	Graph structure with edges and nodes
-•	Modern UI with gradient design
-•	Responsive presentation layout
-•	Fullscreen presentation mode
+Unlike static explanations, this system allows users to actively observe how BFS operates internally through animations and controlled execution.
 
-## What is BFS?
-Breadth-First Search (BFS) is a graph traversal algorithm that:
+## ✨ Features
+- Interactive step-by-step BFS visualization
+- Animated graph traversal (discovery, processing, visited states)
+- Real-time Queue (FIFO) simulation
+- Level-wise exploration of graphs
+- Arrow-based slide navigation (no scrolling interface)
+- Auto-play and manual step execution modes
+- Smooth UI transitions and animations
+- Applications-based visualization section
+- Responsive design for different screen sizes
 
-•	Explores nodes level by level
-•	Uses a Queue (FIFO) data structure
-•	Finds the shortest path in unweighted graphs
+## 🧠 What is BFS?
+Breadth-First Search (BFS) is a graph traversal algorithm that explores nodes level by level.
 
-## 🛠 Technologies Used:
-HTML5
-CSS3 (Flexbox, Grid, Animations)
-JavaScript (DOM Manipulation)
-Font Awesome Icons
-Google Fonts
+It uses a Queue (FIFO) data structure to ensure that nodes are processed in the order they are discovered, making it useful for finding the shortest path in unweighted graphs.
 
-## Author
+## 🛠 Technologies Used
+- HTML5
+- CSS3 (Flexbox, Grid, Animations)
+- JavaScript (DOM manipulation and algorithm logic)
+- Font Awesome Icons
+- Google Fonts
 
-Aqsa Ali Raza Jamali 
+## ⚙️ System Behavior
+- Nodes change states dynamically during traversal
+- Queue updates reflect FIFO processing in real time
+- BFS execution follows level-by-level exploration
+- User can control traversal using step-by-step or auto-play mode
+
+## 📁 Project Structure
+- index.html → Main layout and presentation structure
+- style.css → UI styling and animations
+- script.js → BFS logic and interaction handling
+
+## 👨‍💻 Author
+Aqsa Ali Raza Jamali
