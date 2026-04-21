@@ -264,8 +264,32 @@
         </div>
     </div>
 
-    <!-- SLIDE 8: APPLICATIONS -->
+    <!-- SLIDE 8: SPACE & TIME COMPLEXITY (NEW) -->
     <div class="slide" id="s8">
+        <h2 class="section-head">Performance Analysis</h2>
+        <div class="comp-container">
+            <div class="comp-box interactive" style="padding: 30px;">
+                <h3 style="color:var(--accent); font-size: 1.8rem; margin-bottom: 20px;"><i class="fa-solid fa-stopwatch"></i> Time Complexity</h3>
+                <div style="font-family: 'Fira Code', monospace; font-size: 3rem; background: rgba(0,0,0,0.3); padding: 10px 20px; border-radius: 12px; margin-bottom: 20px; display: inline-block;">O(V + E)</div>
+                <p style="font-size: 1rem; line-height: 1.6; color: var(--text-dim);">
+                    <strong>V</strong> = Number of Vertices (Nodes)<br>
+                    <strong>E</strong> = Number of Edges<br><br>
+                    Every node is enqueued once, and every edge is explored during discovery.
+                </p>
+            </div>
+            <div class="comp-box interactive" style="padding: 30px;">
+                <h3 style="color:var(--orange); font-size: 1.8rem; margin-bottom: 20px;"><i class="fa-solid fa-memory"></i> Space Complexity</h3>
+                <div style="font-family: 'Fira Code', monospace; font-size: 3rem; background: rgba(0,0,0,0.3); padding: 10px 20px; border-radius: 12px; margin-bottom: 20px; display: inline-block;">O(V)</div>
+                <p style="font-size: 1rem; line-height: 1.6; color: var(--text-dim);">
+                    In the worst-case scenario (like a star or dense graph), the queue must store many nodes at once.<br><br>
+                    The "visited" set also keeps track of all V nodes to prevent cycles.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 9: APPLICATIONS -->
+    <div class="slide" id="s9">
         <h2 class="section-head">BFS in the Wild</h2>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; max-width: 1000px;">
             <div class="content-card interactive" style="padding: 20px;">
@@ -287,8 +311,8 @@
         </div>
     </div>
 
-    <!-- SLIDE 9: BFS VS DFS -->
-    <div class="slide" id="s9">
+    <!-- SLIDE 10: BFS VS DFS -->
+    <div class="slide" id="s10">
         <h2 class="section-head">BFS vs DFS</h2>
         <div class="comp-container">
             <div class="comp-box">
@@ -310,8 +334,8 @@
         </div>
     </div>
 
-    <!-- SLIDE 10: CONCLUSION -->
-    <div class="slide" id="s10">
+    <!-- SLIDE 11: CONCLUSION -->
+    <div class="slide" id="s11">
         <h2 class="section-head">Conclusion</h2>
         <div class="content-card">
             <div id="conc-list">
@@ -323,8 +347,8 @@
         </div>
     </div>
 
-    <!-- SLIDE 11: THANK YOU -->
-    <div class="slide" id="s11">
+    <!-- SLIDE 12: THANK YOU -->
+    <div class="slide" id="s12">
         <div style="text-align: center;">
             <h1 style="font-size: 6rem; text-shadow: 0 0 40px var(--accent-glow);">Thank You!</h1>
             <p id="any-q" style="font-size: 2rem; color: var(--orange); opacity: 0; transform: translateY(20px);">Any Questions?</p>
@@ -367,7 +391,7 @@
         
         if(currentSlideIndex === 1) buildIntroGraph();
         if(currentSlideIndex === 5) resetBFS();
-        if(currentSlideIndex === 10) setTimeout(() => {
+        if(currentSlideIndex === 11) setTimeout(() => {
             document.getElementById('any-q').style.opacity = '1';
             document.getElementById('any-q').style.transform = 'translateY(0)';
         }, 1000);
