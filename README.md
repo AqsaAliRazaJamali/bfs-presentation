@@ -13,7 +13,7 @@ Unlike static explanations, this system allows users to actively observe how BFS
 - Animated graph traversal (discovery, processing, visited states)
 - Real-time Queue (FIFO) simulation
 - Level-wise exploration of graphs
-- Arrow-based slide navigation (no scrolling interface)
+- Arrow-based slide navigation 
 - Auto-play and manual step execution modes
 - Smooth UI transitions and animations
 - Applications-based visualization section
