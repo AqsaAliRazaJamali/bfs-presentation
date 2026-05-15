@@ -1,4 +1,4 @@
-# BFS Visualization & Interactive Learning System
+# Interactive BFS Algorithm Visualizer
 
 ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
 ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
@@ -8,7 +8,7 @@
 https://aqsaalirazajamali.github.io/bfs-presentation/
 
 ## 📌 Project Overview
-This project is an interactive BFS (Breadth-First Search) visualization system built using HTML, CSS, and JavaScript. It demonstrates the BFS algorithm through step-by-step graph traversal, queue (FIFO) simulation, and level-wise exploration in a visually interactive format.
+An interactive web-based visualization system designed to demonstrate how the Breadth-First Search (BFS) algorithm works internally using animated graph traversal, queue simulation, and level-wise exploration.
 
 Unlike static explanations, this system allows users to actively observe how BFS operates internally through animations and controlled execution.
 
@@ -27,6 +27,16 @@ Unlike static explanations, this system allows users to actively observe how BFS
 Breadth-First Search (BFS) is a graph traversal algorithm that explores nodes level by level.
 
 It uses a Queue (FIFO) data structure to ensure that nodes are processed in the order they are discovered, making it useful for finding the shortest path in unweighted graphs.
+
+## 📚 Concepts Demonstrated
+- Breadth-First Search (BFS)
+- Queue Data Structure (FIFO)
+- Graph Traversal
+- Level-Order Exploration
+- DOM Manipulation
+- Event Handling
+- Algorithm Animation
+- State Visualization
 
 ## 🛠 Technologies Used
 - HTML5
