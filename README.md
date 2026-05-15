@@ -13,20 +13,29 @@ An interactive web-based visualization system designed to demonstrate how the Br
 Unlike static explanations, this system allows users to actively observe how BFS operates internally through animations and controlled execution.
 
 ## ✨ Features
-- Interactive step-by-step BFS visualization
-- Animated graph traversal (discovery, processing, visited states)
-- Real-time Queue (FIFO) simulation
-- Level-wise exploration of graphs
-- Arrow-based slide navigation 
-- Auto-play and manual step execution modes
-- Smooth UI transitions and animations
-- Applications-based visualization section
-- Responsive design for different screen sizes
+- Step-by-step BFS traversal visualization
+- Real-time Queue (FIFO) state updates
+- Dynamic node state transitions
+- Level-by-level graph exploration
+- Auto-play traversal mode
+- Manual traversal control
+- Interactive graph animations
+- Responsive UI for multiple screen sizes
+- Smooth slide-based learning interface
 
 ## 🧠 What is BFS?
 Breadth-First Search (BFS) is a graph traversal algorithm that explores nodes level by level.
 
 It uses a Queue (FIFO) data structure to ensure that nodes are processed in the order they are discovered, making it useful for finding the shortest path in unweighted graphs.
+
+## 🔍 How BFS Works
+
+1. Start from a source node
+2. Mark the node as visited
+3. Insert the node into the Queue
+4. Remove the front node from the Queue
+5. Visit all unvisited neighboring nodes
+6. Repeat until the Queue becomes empty
 
 ## 📚 Concepts Demonstrated
 - Breadth-First Search (BFS)
@@ -37,6 +46,17 @@ It uses a Queue (FIFO) data structure to ensure that nodes are processed in the 
 - Event Handling
 - Algorithm Animation
 - State Visualization
+
+## ⏱ Time & Space Complexity
+
+| Operation | Complexity |
+|----------|------------|
+| Time Complexity | O(V + E) |
+| Space Complexity | O(V) |
+
+Where:
+- V = Number of vertices
+- E = Number of edges
 
 ## 🛠 Technologies Used
 - HTML5
