@@ -58,6 +58,9 @@ Where:
 - V = Number of vertices
 - E = Number of edges
 
+## 🎯 Purpose of the Project
+This project was developed to simplify the understanding of BFS traversal through visual and interactive learning techniques instead of static theoretical explanations.
+
 ## 🛠 Technologies Used
 - HTML5
 - CSS3 (Flexbox, Grid, Animations)
@@ -76,5 +79,8 @@ Where:
 - style.css → UI styling and animations
 - script.js → BFS logic and interaction handling
 
-## 👨‍💻 Author
-Aqsa Ali Raza Jamali
+## 👩‍💻 Author
+Developed by Aqsa Ali Raza Jamali
+
+- Passionate about interactive learning systems and frontend development
+- Focused on algorithm visualization and educational UI design
