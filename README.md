@@ -1,7 +1,7 @@
 # Interactive BFS Algorithm Visualizer
 
-![Status](https://img.shields.io/badge/status-active-success)
-![License](https://img.shields.io/badge/license-MIT-blue)
+![Status](https://img.shields.io/badge/status-active-success?style=for-the-badge)
+![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)
 
 ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
 ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
@@ -86,9 +86,12 @@ This project was developed to simplify the understanding of BFS traversal throug
 - User can control traversal using step-by-step or auto-play mode
 
 ## 📁 Project Structure
-- index.html → Main layout and presentation structure
-- style.css → UI styling and animations
-- script.js → BFS logic and interaction handling
+
+```plaintext
+├── index.html   # Main layout and presentation structure
+├── style.css    # UI styling and animations
+└── script.js    # BFS logic and interaction handling
+```
 
 ## 👩‍💻 Author
 Developed by Aqsa Ali Raza Jamali
