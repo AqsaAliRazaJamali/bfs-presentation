@@ -24,7 +24,7 @@ Unlike static explanations, this system allows users to actively observe how BFS
 - Manual traversal control
 - Interactive graph animations
 - Responsive UI for multiple screen sizes
-- Smooth slide-based learning interface
+- Interactive slide-based learning interface
 
 ## 🧠 What is BFS?
 Breadth-First Search (BFS) is a graph traversal algorithm that explores nodes level by level.
